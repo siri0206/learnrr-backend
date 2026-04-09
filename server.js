@@ -9,7 +9,13 @@ const app = express();
 
 // Middleware
 app.use(helmet());
-app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:3000', credentials: true }));
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://learnrr.in',
+  'https://www.learnrr.in',
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json({ limit: '10mb' }));
 app.use(morgan('dev'));
 
@@ -39,7 +45,7 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/learnrr';
 
-mongoose.connect(MONGO_URI, { directConnection: true, serverSelectionTimeoutMS: 10000 })
+mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 10000 })
   .then(() => {
     console.log('✅ MongoDB connected');
     app.listen(PORT, () => {
